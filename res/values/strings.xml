@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name" translatable="false">MTC-WakeUp-Service</string>
+    <string name="app_desc">Run services after sleep mode for Microntek devices</string>
+    <string name="ui_service_enable">Service enable</string>
+
+</resources>
