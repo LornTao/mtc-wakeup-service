@@ -2,9 +2,11 @@ package com.mvgv70.mtc_wakeup_service;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -22,18 +24,53 @@ public class ReceiverWakeUp extends BroadcastReceiver {
   public void onReceive(Context context, Intent intent) 
   {
     String action = intent.getAction();
-    Log.d(TAG,"ReceiverWakeUp.onReceive "+action);
-    // стартуем сервисы
-    startServices(context);
+    Log.d(TAG,"ReceiverWakeUp.onReceive "+action+", service running="+ServiceMain.isRunning);
+    if ((action == null) || (!ServiceMain.isRunning))
+      // стартуем сервисы 
+      startServices(context);
+    if (!ServiceMain.isRunning)
+      // стартуем наш wakeup сервис
+      context.startService(new Intent(context, ServiceMain.class));
   }
   
   // запуск сервисов
-  private void startServices(Context context)
+  public void startServices(Context context)
   {
-    BufferedReader br;
+    ArrayList<String> serviceList = new ArrayList<String>();
+    // проверить существование wake-only-active
+    File f = new File(ReceiverPowerOff.WAKE_ACTIVE_SERVICES);
+    boolean wake_only_active = f.exists();
+    if (wake_only_active)
+    {
+      // будем запускать только сервисы из файла running-services
+      try 
+      {
+        Log.d(TAG,"read running-services");
+        // читаем файл running-services
+        BufferedReader bl = new BufferedReader(new FileReader(ReceiverPowerOff.RUNNUNG_REVICE_LIST));
+        try
+        {
+          String line = bl.readLine();
+          while (line != null)
+          {
+            serviceList.add(line);
+            line = bl.readLine();
+          }
+        }
+        finally
+        {
+          bl.close();
+        }
+      } 
+      catch (Exception e) 
+      {
+        Log.d(TAG,e.getMessage());
+        wake_only_active = false;
+      }
+    }
     try 
     {
-      br = new BufferedReader(new FileReader(INI_FILE_NAME));
+      BufferedReader br = new BufferedReader(new FileReader(INI_FILE_NAME));
       try 
       {
         String line = br.readLine();
@@ -45,7 +82,7 @@ public class ReceiverWakeUp extends BroadcastReceiver {
             // посылаем интент
             String intentName = line.substring(7, line.length());
             Log.d(TAG,"send intent "+intentName);
-           context.sendBroadcast(new Intent(intentName));
+            context.sendBroadcast(new Intent(intentName));
            }
           else if (line.startsWith("service:"))
           {
@@ -61,17 +98,23 @@ public class ReceiverWakeUp extends BroadcastReceiver {
               ComponentName cn = new ComponentName(packageName,className);
               Intent intent = new Intent();
               intent.setComponent(cn);
-              try
+              if (!wake_only_active || serviceList.contains(className))
               {
-                // пытаемся стартовать сервис
-                ComponentName cr = context.startService(intent);
-                if (cr == null)
-                  Log.w(TAG,"service "+serviceName+" not found");
+                // если в режиме запущенных сервисов, проверить наличие в списке
+                try
+                {
+                  // пытаемся стартовать сервис
+                  ComponentName cr = context.startService(intent);
+                  if (cr == null)
+                    Log.w(TAG,"service "+serviceName+" not found");
+                }
+                catch (Exception e)
+                {  	      
+                  Log.e(TAG,e.getMessage());
+                }
               }
-              catch (Exception e)
-              {	      
-                Log.e(TAG,e.getMessage());
-              }
+              else
+                Log.d(TAG,"service is not in running-services");
             }
             else
               Log.w(TAG,"incorrect service declaration");
@@ -94,6 +137,10 @@ public class ReceiverWakeUp extends BroadcastReceiver {
             executeCmd(cmd);
 	      }
 	      else if (line.startsWith("#"))
+	      {
+            // комментарий
+	      }
+	      else if (line.startsWith(";"))
 	      {
             // комментарий
 	      }

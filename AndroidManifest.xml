@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mvgv70.mtc_wakeup_service"
-    android:versionCode="12"
-    android:versionName="1.2" >
+    android:versionCode="15"
+    android:versionName="1.5" >
 
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="19" />
     
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -28,7 +31,6 @@
             android:name="ReceiverBoot"
             android:enabled="true" >
             <intent-filter>
-                <action android:name="com.microntek.startApp" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" /> 
   				<action android:name="android.intent.action.QUICKBOOT_POWERON" /> 
             </intent-filter>
@@ -36,9 +38,19 @@
         
         <receiver
             android:name="ReceiverWakeUp"
+            android:exported="true"
             android:enabled="true" >
             <intent-filter>
                 <action android:name="com.microntek.startApp" />
+            </intent-filter>
+        </receiver>
+        
+        <receiver
+            android:name="ReceiverPowerOff"
+            android:exported="true"
+            android:enabled="true" >
+            <intent-filter>
+                <action android:name="com.microntek.bootcheck" />
             </intent-filter>
         </receiver>
 

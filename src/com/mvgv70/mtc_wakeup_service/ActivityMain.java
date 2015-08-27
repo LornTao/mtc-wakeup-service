@@ -40,41 +40,10 @@ public class ActivityMain extends Activity implements OnClickListener {
 	  // нужно ли запускать сервис
 	  if (getServiceEnable() && !ServiceMain.isRunning)
         startService(new Intent(this, ServiceMain.class));
-	  /*
-	  ComponentName cn1 = new ComponentName("com.mvgv70.mtcvolume","ServiceMain");
-      Log.d(TAG,"cn1="+cn1.toString());
-	  Intent intent1 = new Intent();
-	  intent1.setComponent(cn1);
-	  ComponentName cr1 = startService(intent1);
-	  if (cr1 == null)
-	    Log.d(TAG,"startService1 == null");
-	  else
-	    Log.d(TAG,"startService1 = "+cr1.toString());
-	  //
-	  ComponentName cn2 = new ComponentName("com.mvgv70.mtcvolume",".ServiceMain");
-      Log.d(TAG,"cn2="+cn2.toString());
-	  Intent intent2 = new Intent();
-	  intent2.setComponent(cn2);
-	  ComponentName cr2 = startService(intent1);
-	  if (cr2 == null)
-	    Log.d(TAG,"startService2 == null");
-	  else
-	    Log.d(TAG,"startService2 = "+cr2.toString());
-	  //
-	  ComponentName cn3 = new ComponentName("com.mvgv70.mtcvolume","com.mvgv70.mtcvolume.ServiceMain");
-      Log.d(TAG,"cn3="+cn3.toString());
-	  Intent intent3 = new Intent();
-	  intent3.setComponent(cn3);
-	  ComponentName cr3 = startService(intent3);
-	  if (cr3 == null)
-	    Log.d(TAG,"startService3 == null");
-	  else
-	    Log.d(TAG,"startService3 = "+cr3.toString());
-	  */
 	}
 	
-	@Override
-	public void onClick(View v) 
+    @Override
+    public void onClick(View v) 
 	{
 	  switch (v.getId()) {
 	  case R.id.swServiceEnable:
@@ -83,39 +52,39 @@ public class ActivityMain extends Activity implements OnClickListener {
 	    setService(swService.isChecked());
 	    break;
 	  }
-	}
+    }
 	
-	public void setService(boolean state)
-	{
-	  // остановка сервиса
-	  Log.d(TAG,"ActivityMain.startService");
-	  if (state)
-	  {
-	    // старт сервиса
-		Log.d(TAG,"ActivityMain.startService");
-	    startService(new Intent(this, ServiceMain.class));
-	  }
-	} 
+    public void setService(boolean state)
+    {
+      // остановка сервиса
+      Log.d(TAG,"ActivityMain.startService");
+      if (state)
+      {
+        // старт сервиса
+        Log.d(TAG,"ActivityMain.startService");
+        startService(new Intent(this, ServiceMain.class));
+      }
+   } 
 	
-	private boolean getBoolean(String name, boolean defaultValue)
-	{
-	  return prefs.getBoolean(name, defaultValue);
-	}
+    private boolean getBoolean(String name, boolean defaultValue)
+    {
+      return prefs.getBoolean(name, defaultValue);
+    }
 	
-	private void setBoolean(String name, boolean value)
-	{
-	  Editor editor = prefs.edit();
-	  editor.putBoolean(name, value);
-	  editor.commit();
-	}
+    private void setBoolean(String name, boolean value)
+    {
+      Editor editor = prefs.edit();
+      editor.putBoolean(name, value);
+      editor.commit();
+    }
 	
-	public boolean getServiceEnable() 
-	{
-	  return getBoolean("service.enable", true);
-	}
+    public boolean getServiceEnable() 
+    {
+      return getBoolean("service.enable", true);
+    }
 	
-	public void setServiceEnable(boolean enable) 
-	{
-	  setBoolean("service.enable", enable);
-	}
+    public void setServiceEnable(boolean enable) 
+    {
+      setBoolean("service.enable", enable);
+    }
 }
